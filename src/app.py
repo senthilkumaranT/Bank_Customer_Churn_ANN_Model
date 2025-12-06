@@ -4,16 +4,22 @@ import tensorflow as tf
 import pandas as pd 
 import pickle 
 
-model =tf.keras.models.load_model("model.h5") 
+import os
 
-# Load the encoders and scaler 
-with open('label_encoder_gender.pkl', 'rb') as file: 
-    label_encoder_gender = pickle.load(file) 
+# Define base paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
-with open('onehot_encoder_geo.pkl', 'rb') as file:
+model = tf.keras.models.load_model(os.path.join(MODELS_DIR, "model.h5"))
+
+# Load the encoders and scaler
+with open(os.path.join(MODELS_DIR, 'label_encoder_gender.pkl'), 'rb') as file:
+    label_encoder_gender = pickle.load(file)
+
+with open(os.path.join(MODELS_DIR, 'onehot_encoder_geo.pkl'), 'rb') as file:
     onehot_encoder_geo = pickle.load(file)
 
-with open('scaler.pkl', 'rb') as file:
+with open(os.path.join(MODELS_DIR, 'scaler.pkl'), 'rb') as file:
     scaler = pickle.load(file)
 
 st.title("coustomer chirn prediction")
