@@ -1,5 +1,7 @@
 # Customer Churn Prediction (ANN)
 
+<img src="images/pipeline_diagram_detailed.png" width="100%" alt="Pipeline Diagram">
+
 This project uses an Artificial Neural Network (ANN) to predict customer churn based on various features. The model predicts whether a customer is likely to leave the bank based on their demographic and account information.
 
 ## Project Structure
