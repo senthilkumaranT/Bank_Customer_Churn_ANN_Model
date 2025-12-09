@@ -12,10 +12,11 @@ The project is organized into the following directories:
 ANN/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                # GitHub Actions CI/CD pipeline
+│       └── ci.yml                # GitHub Actions CI pipeline
 ├── data/                          # Data files
-│   ├── Churn_Modelling.csv       # Training dataset
-│   └── realtime_example.csv      # Example format for real-time predictions
+│   └── Churn_Modelling.csv       # Training dataset
+├── images/                        # Images and diagrams
+│   └── pipeline_diagram_detailed.png
 ├── models/                        # Trained models and preprocessors
 │   ├── model.h5                  # Trained ANN model
 │   ├── scaler.pkl                # StandardScaler for feature scaling
@@ -26,16 +27,8 @@ ANN/
 │   └── prediction.ipynb          # Notebook for making predictions
 ├── src/                          # Source code
 │   └── app.py                    # Streamlit web application
-├── tests/                        # Test files
-│   ├── __init__.py
-│   └── test_app.py               # Unit tests for the application
-├── .flake8                       # Flake8 linting configuration
 ├── .gitignore                    # Git ignore rules
-├── Makefile                      # Make commands for development
-├── pytest.ini                    # Pytest configuration
-├── pyproject.toml                # Python project configuration
 ├── requirements.txt              # Python dependencies
-├── requirements-dev.txt          # Development dependencies
 └── README.md                     # This file
 ```
 
@@ -88,7 +81,7 @@ If these files are missing, you'll need to train the model first (see Model Trai
 
 4. **Use the application**:
    - Fill in the customer information using the form controls
-   - Click anywhere to see the churn prediction
+   - Click the "Predict Churn" button to see the prediction
    - The prediction shows both the probability and a binary classification
 
 ### Running the Jupyter Notebooks
@@ -132,9 +125,7 @@ For real-time predictions, your input data should follow this CSV format:
 - `IsActiveMember` (integer): Whether the customer is an active member (0 or 1)
 - `EstimatedSalary` (float): Estimated salary of the customer
 
-### Example Realtime Data File
-
-See `data/realtime_example.csv` for a complete example:
+### Example Realtime Data Format
 
 ```csv
 CreditScore,Geography,Gender,Age,Tenure,Balance,NumOfProducts,HasCrCard,IsActiveMember,EstimatedSalary
@@ -150,7 +141,7 @@ You can modify `notebooks/prediction.ipynb` to read from a CSV file and make bat
 ```python
 import pandas as pd
 # Load your realtime data
-realtime_data = pd.read_csv('data/realtime_example.csv')
+realtime_data = pd.read_csv('your_data.csv')
 # Process and predict for each row
 ```
 
@@ -197,7 +188,6 @@ pip install -r requirements.txt
 
 ## Dependencies
 
-### Production Dependencies
 - **tensorflow** (>=2.20.0): Deep learning framework
 - **pandas** (>=2.0.0): Data manipulation
 - **numpy** (>=1.24.0): Numerical computing
@@ -206,77 +196,24 @@ pip install -r requirements.txt
 - **matplotlib** (>=3.7.0): Plotting library
 - **tensorboard** (>=2.20.0): TensorFlow visualization
 
-### Development Dependencies
-- **pytest** (>=7.4.0): Testing framework
-- **pytest-cov** (>=4.1.0): Coverage reporting
-- **flake8** (>=6.1.0): Linting
-- **black** (>=23.11.0): Code formatting
-- **safety** (>=2.3.0): Security scanning
-
 ## CI/CD Pipeline
 
-This project includes a GitHub Actions CI/CD pipeline that automatically:
+This project includes a simple GitHub Actions CI pipeline that automatically:
 
-- **Lints code** using flake8
-- **Checks code formatting** using Black
-- **Runs tests** using pytest with coverage reporting
-- **Verifies imports** and model file existence
-- **Tests on multiple Python versions** (3.10, 3.11, 3.12)
-- **Performs security scans** on dependencies
-
-### Running CI Checks Locally
-
-You can run the same checks locally using the Makefile:
-
-```bash
-# Install development dependencies
-make install-dev
-
-# Run all CI checks
-make ci
-
-# Or run individual checks
-make test      # Run tests
-make lint      # Run linters
-make format    # Format code
-make format-check  # Check formatting without modifying
-```
+- **Verifies Python syntax** - Checks that the code is syntactically correct
+- **Verifies dependencies** - Ensures all required packages can be imported
+- **Verifies app import** - Tests that the application can be imported
+- **Checks model files** - Verifies all required model files exist
 
 ### GitHub Actions Workflow
 
 The CI pipeline runs automatically on:
-- Push to `main` or `develop` branches
-- Pull requests to `main` or `develop` branches
+- Push to `main` branch
+- Pull requests to `main` branch
 
 View the workflow file at `.github/workflows/ci.yml`
 
-## Development
-
-### Running Tests
-
-```bash
-# Install development dependencies
-pip install -r requirements-dev.txt
-
-# Run tests
-pytest tests/ -v
-
-# Run tests with coverage
-pytest tests/ -v --cov=src --cov-report=html
-```
-
-### Code Quality
-
-```bash
-# Format code
-black src/ tests/
-
-# Check formatting
-black --check src/ tests/
-
-# Lint code
-flake8 src/
-```
+The pipeline is lightweight and fast, perfect for a public repository.
 
 ## License
 
