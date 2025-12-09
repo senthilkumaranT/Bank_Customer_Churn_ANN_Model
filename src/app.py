@@ -1,11 +1,42 @@
-import streamlit as st 
-import numpy as np 
-import tensorflow as tf 
-import pandas as pd 
+import streamlit as st
+import numpy as np
+import tensorflow as tf
+import pandas as pd
 import pickle
 import os
 
-# Define base paths
+# 🎨 Set Streamlit theme (for more color)
+st.set_page_config(
+    page_title="Customer Churn Prediction",
+    page_icon="🔮",
+    layout="centered",
+    initial_sidebar_state="auto"
+)
+# Background with gradient using markdown (limited colors in Streamlit natively)
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #f8ffae 0%, #43cea2 100%);
+    }
+    .highlight {
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
+        margin: 1em 0;
+    }
+    .info-hl { background: #d0f9ff; }
+    .warn-hl { background: #ffcccc; }
+    .succ-hl { background: #dcffe4; }
+    .predict-prob {
+        font-size: 2em;
+        font-weight: bold;
+        color: #fa8231;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
 
@@ -21,25 +52,47 @@ with open(os.path.join(MODELS_DIR, 'onehot_encoder_geo.pkl'), 'rb') as file:
 with open(os.path.join(MODELS_DIR, 'scaler.pkl'), 'rb') as file:
     scaler = pickle.load(file)
 
-st.title("Customer Churn Prediction")
+st.markdown(
+    """
+    <div style='text-align:center;'>
+        <h1 style='color:#3b6978; font-size:2.5em; margin-bottom:0.2em;'>🔮 Customer Churn Prediction 🔮</h1>
+        <p style='color:#204051; font-size:1.2em;'>
+            Empower your business with colorful, instant predictions!
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-# Input form
+# Add a colored horizontal rule for aesthetics
+st.markdown("<hr style='border-top: 2px dotted #00b894;'>", unsafe_allow_html=True)
+
 with st.form("churn_prediction_form"):
-    geography = st.selectbox('Geography', onehot_encoder_geo.categories_[0])
-    gender = st.selectbox('Gender', label_encoder_gender.classes_)
-    age = st.slider('Age', 18, 92)
-    balance = st.number_input('Balance')
-    credit_score = st.number_input('Credit Score')
-    estimated_salary = st.number_input('Estimated Salary')
-    tenure = st.slider('Tenure', 0, 10)
-    num_of_products = st.slider('Number of Products', 1, 4)
-    has_cr_card = st.selectbox('Has Credit Card', [0, 1])
-    is_active_member = st.selectbox('Is Active Member', [0, 1])
-    
-    # Submit button
-    submitted = st.form_submit_button("Predict Churn", use_container_width=True)
+    st.markdown("<div class='highlight info-hl'>Please fill out the customer details:</div>", unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        geography = st.selectbox('🌎 Geography', onehot_encoder_geo.categories_[0])
+        gender = st.selectbox('🚻 Gender', label_encoder_gender.classes_)
+        age = st.slider('🎂 Age', 18, 92, 30)
+        credit_score = st.number_input('💳 Credit Score', min_value=0, max_value=1000, value=650)
+        tenure = st.slider('⌛ Tenure (years)', 0, 10, 3)
+    with c2:
+        balance = st.number_input('🏦 Balance', min_value=0.0, value=10000.0)
+        estimated_salary = st.number_input('💰 Estimated Salary', min_value=0.0, value=50000.0)
+        num_of_products = st.slider('🛒 Number of Products', 1, 4, 1)
+        has_cr_card = st.selectbox('💳 Has Credit Card', ['No', 'Yes'])
+        is_active_member = st.selectbox('🟢 Is Active Member', ['No', 'Yes'])
 
-# Calculate prediction only when button is clicked
+    # Map Yes/No to 1/0
+    has_cr_card_val = 1 if has_cr_card == 'Yes' else 0
+    is_active_member_val = 1 if is_active_member == 'Yes' else 0
+    
+    # Rainbow button!
+    submitted = st.form_submit_button(
+        "🌈 Predict Churn 🌈",
+        use_container_width=True
+    )
+
 if submitted:
     # Prepare input data
     input_data = pd.DataFrame({
@@ -49,8 +102,8 @@ if submitted:
         'Tenure': [tenure],
         'Balance': [balance],
         'NumOfProducts': [num_of_products],
-        'HasCrCard': [has_cr_card],
-        'IsActiveMember': [is_active_member],
+        'HasCrCard': [has_cr_card_val],
+        'IsActiveMember': [is_active_member_val],
         'EstimatedSalary': [estimated_salary]
     })
     
@@ -65,15 +118,43 @@ if submitted:
     input_data_scaled = scaler.transform(input_data)
     
     # Predict churn
-    with st.spinner('Calculating prediction...'):
+    with st.spinner('✨ Calculating your colorful prediction...'):
         prediction = model.predict(input_data_scaled, verbose=0)
         prediction_proba = prediction[0][0]
     
-    # Display results
-    st.success("Prediction Complete!")
-    st.metric("Churn Probability", f"{prediction_proba:.2%}")
-    
+    # Show result with custom coloring and emoji
+    st.markdown(
+        "<div class='highlight succ-hl'>🔥 <b>Prediction Complete!</b> 🔥</div>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        f"<div class='predict-prob'>Churn Probability: <span style='color:#0984e3'>{prediction_proba:.2%}</span></div>",
+        unsafe_allow_html=True
+    )
+        
     if prediction_proba > 0.5:
-        st.warning('⚠️ The customer is likely to churn.')
+        st.markdown(
+            "<div class='highlight warn-hl'>"
+            "⚠️ <span style='color:#d63031; font-weight:bold;'>The customer is <u>likely</u> to churn.</span> "
+            "Take action now! 🚨"
+            "</div>",
+            unsafe_allow_html=True
+        )
     else:
-        st.info('✅ The customer is not likely to churn.')
+        st.markdown(
+            "<div class='highlight succ-hl'>"
+            "✅ <span style='color:#00b894; font-weight:bold;'>The customer is <u>not likely</u> to churn.</span> "
+            "Keep engaging! 🎉"
+            "</div>",
+            unsafe_allow_html=True
+        )
+# End with a nice colorful footer
+st.markdown(
+    """
+    <hr style='border-top:2px solid #fdcb6e;'>
+    <div style="text-align:center;font-size:1em;color:#636e72;">
+        Made with <span style="color:#fd79a8;">&#10084;</span> and <span style="color:#00b894;">Streamlit</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
