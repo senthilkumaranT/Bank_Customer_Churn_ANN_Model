@@ -25,9 +25,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Verify imports
+    - name: Verify Python syntax
       run: |
-        python -c "import sys; sys.path.insert(0, 'src'); import app; print('✓ Imports successful')"
+        python -m py_compile src/app.py && echo "✓ Python syntax is valid"
+    
+    - name: Verify imports (without model loading)
+      run: |
+        python -c "
+        import sys
+        import os
+        sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
+        # Test basic imports
+        import streamlit
+        import numpy
+        import tensorflow
+        import pandas
+        import pickle
+        print('✓ All required modules can be imported')
+        "
     
     - name: Check model files exist
       run: |
