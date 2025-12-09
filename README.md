@@ -10,6 +10,9 @@ The project is organized into the following directories:
 
 ```
 ANN/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                # GitHub Actions CI/CD pipeline
 ├── data/                          # Data files
 │   ├── Churn_Modelling.csv       # Training dataset
 │   └── realtime_example.csv      # Example format for real-time predictions
@@ -23,7 +26,16 @@ ANN/
 │   └── prediction.ipynb          # Notebook for making predictions
 ├── src/                          # Source code
 │   └── app.py                    # Streamlit web application
+├── tests/                        # Test files
+│   ├── __init__.py
+│   └── test_app.py               # Unit tests for the application
+├── .flake8                       # Flake8 linting configuration
+├── .gitignore                    # Git ignore rules
+├── Makefile                      # Make commands for development
+├── pytest.ini                    # Pytest configuration
+├── pyproject.toml                # Python project configuration
 ├── requirements.txt              # Python dependencies
+├── requirements-dev.txt          # Development dependencies
 └── README.md                     # This file
 ```
 
@@ -185,13 +197,86 @@ pip install -r requirements.txt
 
 ## Dependencies
 
-- **tensorflow** (2.15.0): Deep learning framework
+### Production Dependencies
+- **tensorflow** (>=2.20.0): Deep learning framework
 - **pandas** (>=2.0.0): Data manipulation
 - **numpy** (>=1.24.0): Numerical computing
 - **scikit-learn** (>=1.3.0): Machine learning utilities
-- **streamlit** (1.40.0): Web application framework
+- **streamlit** (>=1.40.0): Web application framework
 - **matplotlib** (>=3.7.0): Plotting library
-- **tensorboard** (>=2.15.0): TensorFlow visualization
+- **tensorboard** (>=2.20.0): TensorFlow visualization
+
+### Development Dependencies
+- **pytest** (>=7.4.0): Testing framework
+- **pytest-cov** (>=4.1.0): Coverage reporting
+- **flake8** (>=6.1.0): Linting
+- **black** (>=23.11.0): Code formatting
+- **safety** (>=2.3.0): Security scanning
+
+## CI/CD Pipeline
+
+This project includes a GitHub Actions CI/CD pipeline that automatically:
+
+- **Lints code** using flake8
+- **Checks code formatting** using Black
+- **Runs tests** using pytest with coverage reporting
+- **Verifies imports** and model file existence
+- **Tests on multiple Python versions** (3.10, 3.11, 3.12)
+- **Performs security scans** on dependencies
+
+### Running CI Checks Locally
+
+You can run the same checks locally using the Makefile:
+
+```bash
+# Install development dependencies
+make install-dev
+
+# Run all CI checks
+make ci
+
+# Or run individual checks
+make test      # Run tests
+make lint      # Run linters
+make format    # Format code
+make format-check  # Check formatting without modifying
+```
+
+### GitHub Actions Workflow
+
+The CI pipeline runs automatically on:
+- Push to `main` or `develop` branches
+- Pull requests to `main` or `develop` branches
+
+View the workflow file at `.github/workflows/ci.yml`
+
+## Development
+
+### Running Tests
+
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run tests
+pytest tests/ -v
+
+# Run tests with coverage
+pytest tests/ -v --cov=src --cov-report=html
+```
+
+### Code Quality
+
+```bash
+# Format code
+black src/ tests/
+
+# Check formatting
+black --check src/ tests/
+
+# Lint code
+flake8 src/
+```
 
 ## License
 
